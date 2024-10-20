@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+    --hsgGreen: #00802f;
+    --footerColor: var(--hsgGreen);
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    background-color: var(--footerColor);
+}
+
+body{
+  margin:0;
+  padding: 0;
+}
