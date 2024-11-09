@@ -9,7 +9,15 @@ footer {
     background-color: var(--footerColor);
 }
 
-body{
-  margin:0;
+app-chat-bar {
+  position: fixed;
+  bottom: 120px;
+  width: 100%;
+}
+
+
+body {
+  height: 100%;
+  margin: 0;
   padding: 0;
 }

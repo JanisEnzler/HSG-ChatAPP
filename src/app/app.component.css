@@ -1,0 +1,13 @@
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+app-chat-bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
