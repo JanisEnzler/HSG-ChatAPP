@@ -1,6 +1,8 @@
 <app-header></app-header>
 <main>
-    <app-chat-history [history]="messageHistory" />
+    <div class="content-area">
+        <app-chat-history [history]="messageHistory" />
+    </div>
     <app-chat-bar (messageToSend)="messageSend($event)" />
 </main>
 <app-footer></app-footer>

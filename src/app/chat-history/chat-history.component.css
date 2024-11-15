@@ -1,11 +1,13 @@
 :host {
     display: flex;
     flex-direction: column;
-    height: calc(100% - 80px);
+    height: 100%;
 }
 
 .form-control {    
-    flex: 1;
-    overflow-y: auto;
+    flex-grow: 1;
+    border: #0000;
+    overflow: auto;
+    text-align: right;
 }
 
