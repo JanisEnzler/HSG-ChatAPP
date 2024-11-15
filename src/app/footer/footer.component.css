@@ -8,6 +8,8 @@ footer {
 }
 
 a {
+    font-family: 'Gill Sans MT';
+    font-size: 12px;
     color: white;
     text-decoration: none;
 }

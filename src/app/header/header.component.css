@@ -7,4 +7,6 @@ header img {
 header {
     border-bottom: solid 2px #000;
     width: 100%;
+    height: 110px;
+    margin-bottom: 20px;
 }

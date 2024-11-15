@@ -21,5 +21,7 @@ textarea{
 }
 /* Center place holder verticaly */
 textarea::placeholder{
+    font-family: 'Gill Sans MT';
+    font-size: 14px;
     padding: auto;
 }
