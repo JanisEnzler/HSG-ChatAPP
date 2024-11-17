@@ -13,7 +13,7 @@ import { ChatHistoryComponent } from './chat-history/chat-history.component';
 })
 export class AppComponent {
   title = 'HSG-ChatAPP';
-  /* Dictionary of time and, message */
+  /* Array of tuples of time and message */
   messageHistory: [string, string][] = [];
 
   messageSend(message: string): void {
