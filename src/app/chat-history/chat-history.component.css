@@ -6,8 +6,6 @@
 
 .chat-history {    
     flex-grow: 1;
-    border: 1px solid #000;
-    border-radius: 10px;
     overflow: auto;
     text-align: right;
 }
