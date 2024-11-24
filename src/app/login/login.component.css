@@ -38,6 +38,10 @@ button:disabled{
     box-shadow: none;
 }
 
+button.btn.btn-primary:active{
+    background-color: var(--hsgGreen);
+}
+
 input{
     padding: 0px;
     border: none;
