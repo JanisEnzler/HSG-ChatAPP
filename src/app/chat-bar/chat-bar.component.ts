@@ -27,16 +27,12 @@ export class ChatBarComponent {
       return;
     }
 
-    console.log('Nickname: ', this.nickname);
-
     if (!this.nickname) {
       this.errorMessage = 'Please add a nickname!';
 
       return;
     }
-
-    const messageToSend = `${message}`;
-
+    const messageToSend = `${this.nickname} : ${message}`;
     this.messageToSend.emit(messageToSend);
     this.chatMessage = '';
   }

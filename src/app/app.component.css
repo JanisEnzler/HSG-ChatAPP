@@ -4,14 +4,6 @@
   min-height: 100vh;
 }
 
-app-chat-bar {
-  padding-top: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
 body,
 html {
   max-height: 100%;
@@ -26,16 +18,20 @@ main {
   flex-direction: column;
 }
 
-.content-area {
-  height: calc(100% - 80px);
+app-chat {
+  height: 100%;
   flex: 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: end
 }
 
-app-chat-history {
-  flex-grow: 1;
-  max-width: 100%;
-  border-color: black;
+app-login {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+

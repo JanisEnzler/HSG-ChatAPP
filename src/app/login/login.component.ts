@@ -2,13 +2,13 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-nickname',
+  selector: 'app-login',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './nickname.component.html',
-  styleUrl: './nickname.component.css'
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css'
 })
-export class NicknameComponent {
+export class LoginComponent {
   @Output() nicknameCreate = new EventEmitter<string>();
 
   chatNickname = '';

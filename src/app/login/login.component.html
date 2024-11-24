@@ -1,0 +1,19 @@
+<div class="LoginForm">
+    <h2>Login Campus Connect</h2>
+    <div class="input-container">
+        <input 
+        [(ngModel)]="chatNickname"
+        type="text"
+        class="form-control"
+        placeholder="Benutzername"
+        >
+        <img src="assets/icons/person_icon.svg">
+    </div>
+    <button
+    class="btn btn-primary"
+    [disabled]="!chatNickname.trim()"
+    (click)="createNickname(chatNickname)"
+    >Login
+    </button>
+</div>
+

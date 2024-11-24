@@ -1,0 +1,5 @@
+<app-chat-history [history]="history" />
+<app-chat-bar
+    (messageToSend)="messageSend($event)"
+    [nickname]="nickname"
+/>
