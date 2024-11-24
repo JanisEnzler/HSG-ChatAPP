@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './chat-bar.component.css',
 })
 export class ChatBarComponent {
+  @Input () nickname!: string;
+
   @Output() messageToSend = new EventEmitter<string>();
 
   chatMessage = '';
@@ -21,6 +23,14 @@ export class ChatBarComponent {
 
     if (!message) {
       this.errorMessage = 'Please add a message!';
+
+      return;
+    }
+
+    console.log('Nickname: ', this.nickname);
+
+    if (!this.nickname) {
+      this.errorMessage = 'Please add a nickname!';
 
       return;
     }

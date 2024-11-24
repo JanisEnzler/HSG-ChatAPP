@@ -8,5 +8,6 @@
     flex-grow: 1;
     overflow: auto;
     text-align: right;
+    border-color: #000;
 }
 

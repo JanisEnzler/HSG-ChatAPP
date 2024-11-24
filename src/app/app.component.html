@@ -1,8 +1,12 @@
 <app-header></app-header>
 <main>
     <div class="content-area">
+        <app-nickname (nicknameCreate)="nickname = $event"></app-nickname>
         <app-chat-history [history]="messageHistory" />
     </div>
-    <app-chat-bar (messageToSend)="messageSend($event)" />
+    <app-chat-bar 
+    (messageToSend)="messageSend($event)"
+    [nickname]="nickname"
+    />
 </main>
 <app-footer></app-footer>
