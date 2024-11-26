@@ -133,6 +133,12 @@ app.post('/nicknames', async (req, res) => {
     return;
   }
 
+  // Nickname should be between 3 and 20 characters long
+  if (userName.length < 3 || userName.length > 20) {
+    res.status(400).send('Nickname should be between 3 and 20 characters long.');
+    return;
+  }
+
   /* Check if the nickname is already in the DB */
   const result = await pool.query('SELECT * FROM nicknames WHERE nickname = $1', [userName]);
   if (result.rows.length > 0) {
