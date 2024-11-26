@@ -97,9 +97,9 @@ app.post('/signup', async (req, res) => {
       const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *', [userName, userPassword]);
       const tokenData = createToken(result.rows[0].id, userPassword);
 
-      res.cookie('token', tokenData.token, { httpOnly: true, secure: true });
-      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true });
-      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true });
+      res.cookie('token', tokenData.token, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
+      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true, expires: tokenData.expirationDate });
+      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
   
       res.status(201).json(tokenData);
     } catch (err) {
@@ -131,9 +131,9 @@ app.get('/login', async (req, res) => {
     } else {
       const tokenData = createToken(result.rows[0].id, userPassword);
 
-      res.cookie('token', tokenData.token, { httpOnly: true, secure: true });
-      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true });
-      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true });
+      res.cookie('token', tokenData.token, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
+      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true, expires: tokenData.expirationDate });
+      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
 
       res.status(200).json(tokenData);
     }
