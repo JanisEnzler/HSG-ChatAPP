@@ -3,9 +3,10 @@ var app = express();
 var port = 3000;
 
 const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
 
 const dbPassword = process.env.DB_PASSWORD || 'password';
-const dbUser = process.env.DB_USER || 'user';
+const dbUser = process.env.DB_USER || 'admin';
 const dbHost = process.env.DB_HOST || 'localhost';
 const dbPort = process.env.DB_PORT || 5432;
 const dbName = process.env.DB|| 'postgres';
@@ -25,6 +26,7 @@ const pool = new Pool({
 app.set('port', port);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const chatHistory = [];
 const nicknames = [];
@@ -50,9 +52,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/signup', async (req, res) => {
-  const userName = req.query?.username?.toString();
-  const userPassword = req.query?.password?.toString();
+app.post('/signup', async (req, res) => {
+  const userName = req.body?.username?.toString();
+  const userPassword = req.body?.password?.toString();
 
   if (!userName || !userPassword) {
     res.status(400).send('Username or password is missing.');
@@ -93,41 +95,50 @@ app.get('/signup', async (req, res) => {
   }else{
     try {
       const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *', [userName, userPassword]);
-      res.status(201).json(result.rows[0].userID);
+      const tokenData = createToken(result.rows[0].id, userPassword);
+
+      res.cookie('token', tokenData.token, { httpOnly: true, secure: true });
+      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true });
+      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true });
+  
+      res.status(201).json(tokenData);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
-
-
-
-
 });
 
 // Takes username and password and returns a token
 app.get('/login', async (req, res) => {
-  const userName = req.query?.username?.toString();
-  const userPassword = req.query?.password?.toString();
+  const userName = req.body?.username?.toString();
+  const userPassword = req.body?.password?.toString();
 
   // Check if the username and password are provided
   if (!userName || !userPassword) {
     res.status(400).send('Username or password is missing.');
     return;
   }
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [userName]);
+    if (result.rows.length === 0) {
+      res.status(404).send('User not found.');
+      return;
+    }
 
-  // Retrieve the user from the database
-  const result = await pool.query('SELECT * FROM users WHERE username = $1', [userName]);
-  if (result.rows.length === 0) {
-    res.status(404).send('User not found.');
-    return;
-  }
+    if (result.rows[0].password !== userPassword) {
+      res.status(401).send('Incorrect password.');
+      return;
+    } else {
+      const tokenData = createToken(result.rows[0].id, userPassword);
 
-  if (result.rows[0].password !== userPassword) {
-    res.status(401).send('Incorrect password.');
-    return;
-  }else{
-    const token = createToken(result.rows[0].id, userPassword);
-    res.status(200).json({ token: token });
+      res.cookie('token', tokenData.token, { httpOnly: true, secure: true });
+      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true });
+      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true });
+
+      res.status(200).json(tokenData);
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -141,6 +152,24 @@ app.get('/history', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 
+});
+
+app.get('/validate', async (req, res) => {
+  const token = req.cookies.token;
+  const userID = req.cookies.userID;
+  const expirationDate = req.cookies.expirationDate;
+
+  if (!token || !userID || !expirationDate) {
+    res.status(400).send('Token, userID, or expirationDate is missing.');
+    return;
+  }
+
+  if (!verifyToken(token, userID, expirationDate)) {
+    res.status(401).send('Invalid or expired token.');
+    return;
+  }
+
+  res.status(200).send('Valid token.');
 });
 
 app.post('/history', async (req, res) => {
@@ -261,21 +290,39 @@ app.listen(app.get('port'), function () {
 
 
 function createToken(userID, userPassword) {
-  // Expiration date = curent date + 7 days
-  expirationDate = date.setDate(date.getDate() + 7);
+  // Initialize the current date
+  let date = new Date();
+  
+  // Expiration date = current date + 7 days
+  let expirationDate = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   // Create a session token by hashing the user ID, User Password, adminSecret, and the expiration date
-  return crypto.createHmac('sha256', adminSecret)
-    .update(userID + adminPassword + expirationDate)
-    .digest('hex'), expirationDate;
+  let token = crypto.createHmac('sha256', adminSecret)
+    .update(userID + userPassword + expirationDate)
+    .digest('hex');
+
+  return {
+    token: token,
+    expirationDate: expirationDate,
+    userID: userID
+  };
 }
 
-function verifyToken(token, userID, expirationDate) {
+// async function to verify the token
+async function verifyToken(token, userID, expirationDate){
   // retrieve user password from database
-  userPassword = pool.query('SELECT password FROM users WHERE id = $1', [userID]);
+  let result = await pool.query('SELECT password FROM users WHERE id = $1', [userID]);
+  let userPassword = result.rows[0].password;
+
+  expirationDate = new Date(expirationDate);
+  let date = new Date();
+  
+  if (expirationDate < date) {
+    return false;
+  }
 
   // Verify the token by hashing the user ID, User Password, adminSecret, and the expiration date
   return token === crypto.createHmac('sha256', adminSecret)
-    .update(userID + adminPassword + expirationDate)
+    .update(userID + userPassword + expirationDate)
     .digest('hex');
 }
