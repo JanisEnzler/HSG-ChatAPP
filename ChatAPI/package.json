@@ -1,0 +1,28 @@
+{
+  "name": "chat-api",
+  "description": "Chat App Api",
+  "keywords": [
+    "chat",
+    "api",
+    "node",
+    "express",
+    "webpack"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "build": "webpack"
+  },
+  "dependencies": {
+    "express": "4.21.1",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "prettier": "3.3.3",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
