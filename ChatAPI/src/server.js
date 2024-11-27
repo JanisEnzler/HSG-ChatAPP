@@ -1,8 +1,9 @@
 var express = require('express');
+// import 
 var app = express();
 var port = 3000;
 
-const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
 const dbPassword = process.env.DB_PASSWORD || 'password';
@@ -95,13 +96,10 @@ app.post('/signup', async (req, res) => {
   }else{
     try {
       const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *', [userName, userPassword]);
-      const tokenData = createToken(result.rows[0].id, userPassword);
+      const token = generateToken(result.rows[0].id);
 
-      res.cookie('token', tokenData.token, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
-      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true, expires: tokenData.expirationDate });
-      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
-  
-      res.status(201).json(tokenData);
+      res.cookie('token', token, { httpOnly: true, secure: true});
+      res.status(201).json({ message: 'Signup successful' });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -129,13 +127,10 @@ app.get('/login', async (req, res) => {
       res.status(401).send('Incorrect password.');
       return;
     } else {
-      const tokenData = createToken(result.rows[0].id, userPassword);
+      const token = generateToken(result.rows[0].id);
 
-      res.cookie('token', tokenData.token, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
-      res.cookie('expirationDate', tokenData.expirationDate.toISOString(), { httpOnly: true, secure: true, expires: tokenData.expirationDate });
-      res.cookie('userID', tokenData.userID, { httpOnly: true, secure: true, expires: tokenData.expirationDate });
-
-      res.status(200).json(tokenData);
+      res.cookie('token', token, { httpOnly: true, secure: true});
+      res.status(200).json({ message: 'Login successful' });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -156,20 +151,13 @@ app.get('/history', async (req, res) => {
 
 app.get('/validate', async (req, res) => {
   const token = req.cookies.token;
-  const userID = req.cookies.userID;
-  const expirationDate = req.cookies.expirationDate;
-
-  if (!token || !userID || !expirationDate) {
-    res.status(400).send('Token, userID, or expirationDate is missing.');
-    return;
-  }
-
-  if (!verifyToken(token, userID, expirationDate)) {
+  
+  if (!verifyToken(token)) {
     res.status(401).send('Invalid or expired token.');
     return;
   }
-
-  res.status(200).send('Valid token.');
+  user_id = jwt.decode(token).id;
+  res.status(200).send(`Valid token for user: ${user_id}`);
 });
 
 app.post('/history', async (req, res) => {
@@ -289,40 +277,19 @@ app.listen(app.get('port'), function () {
 
 
 
-function createToken(userID, userPassword) {
-  // Initialize the current date
-  let date = new Date();
-  
-  // Expiration date = current date + 7 days
-  let expirationDate = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  // Create a session token by hashing the user ID, User Password, adminSecret, and the expiration date
-  let token = crypto.createHmac('sha256', adminSecret)
-    .update(userID + userPassword + expirationDate)
-    .digest('hex');
-
-  return {
-    token: token,
-    expirationDate: expirationDate,
-    userID: userID
-  };
+function generateToken(userID) {
+  const payload = { id: userID };
+  const options = { expiresIn: 300};
+  token = jwt.sign(payload, adminSecret, options);
+  return token;
 }
 
 // async function to verify the token
-async function verifyToken(token, userID, expirationDate){
-  // retrieve user password from database
-  let result = await pool.query('SELECT password FROM users WHERE id = $1', [userID]);
-  let userPassword = result.rows[0].password;
-
-  expirationDate = new Date(expirationDate);
-  let date = new Date();
-  
-  if (expirationDate < date) {
+function verifyToken(token){
+  try {
+    return jwt.verify(token, adminSecret);
+  } catch (error) {
+    // Access Denied
     return false;
   }
-
-  // Verify the token by hashing the user ID, User Password, adminSecret, and the expiration date
-  return token === crypto.createHmac('sha256', adminSecret)
-    .update(userID + userPassword + expirationDate)
-    .digest('hex');
 }
