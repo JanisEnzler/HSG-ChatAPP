@@ -1,5 +1,5 @@
 var express = require('express');
-// import 
+require('dotenv').config();
 var app = express();
 var port = 3000;
 
@@ -10,7 +10,7 @@ const dbPassword = process.env.DB_PASSWORD || 'password';
 const dbUser = process.env.DB_USER || 'admin';
 const dbHost = process.env.DB_HOST || 'localhost';
 const dbPort = process.env.DB_PORT || 5432;
-const dbName = process.env.DB|| 'postgres';
+const dbName = process.env.DB || 'postgres';
 const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
 const adminSecret = process.env.ADMIN_SECRET || 'defaultSecret';
 
@@ -88,21 +88,21 @@ app.post('/signup', async (req, res) => {
   }
 
   // Check if the username is already in the DB, and if not, add it (this should be done in a transaction)
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [userName]);
+    if (result.rows.length > 0) {
+      res.status(400).send('Username already exists.');
+      return;
+    } else {
 
-  const result = await pool.query('SELECT * FROM users WHERE username = $1', [userName]);
-  if (result.rows.length > 0) {
-    res.status(400).send('Username already exists.');
-    return;
-  }else{
-    try {
       const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *', [userName, userPassword]);
       const token = generateToken(result.rows[0].id);
 
-      res.cookie('token', token, { httpOnly: true, secure: true});
+      res.cookie('token', token, { httpOnly: true, secure: true });
       res.status(201).json({ message: 'Signup successful' });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
     }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -129,7 +129,7 @@ app.get('/login', async (req, res) => {
     } else {
       const token = generateToken(result.rows[0].id);
 
-      res.cookie('token', token, { httpOnly: true, secure: true});
+      res.cookie('token', token, { httpOnly: true, secure: true });
       res.status(200).json({ message: 'Login successful' });
     }
   } catch (err) {
@@ -151,7 +151,7 @@ app.get('/history', async (req, res) => {
 
 app.get('/validate', async (req, res) => {
   const token = req.cookies.token;
-  
+
   if (!verifyToken(token)) {
     res.status(401).send('Invalid or expired token.');
     return;
@@ -174,11 +174,15 @@ app.post('/history', async (req, res) => {
     return;
   }
 
+  try {
   // Check if the nickname exists in the DB
   const result = await pool.query('SELECT * FROM nicknames WHERE id = $1', [nickname_id]);
   if (result.rows.length === 0) {
     res.status(400).send('Nickname not found.');
     return;
+  }
+  } catch (err) { 
+    res.status(500).json({ error: err.message });
   }
 
   // Get the current, local time
@@ -240,15 +244,14 @@ app.post('/nicknames', async (req, res) => {
     return;
   }
 
+  try {
   /* Check if the nickname is already in the DB */
-  const result = await pool.query('SELECT * FROM nicknames WHERE nickname = $1', [userName]);
+  var result = await pool.query('SELECT * FROM nicknames WHERE nickname = $1', [userName]);
   if (result.rows.length > 0) {
     res.status(400).send('Nickname already exists.');
     return;
   }
-
-  try {
-    const result = await pool.query('INSERT INTO nicknames (nickname) VALUES ($1) RETURNING *', [userName]);
+    result = await pool.query('INSERT INTO nicknames (nickname) VALUES ($1) RETURNING *', [userName]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -279,13 +282,13 @@ app.listen(app.get('port'), function () {
 
 function generateToken(userID) {
   const payload = { id: userID };
-  const options = { expiresIn: 300};
+  const options = { expiresIn: 300 };
   token = jwt.sign(payload, adminSecret, options);
   return token;
 }
 
 // async function to verify the token
-function verifyToken(token){
+function verifyToken(token) {
   try {
     return jwt.verify(token, adminSecret);
   } catch (error) {
