@@ -1,13 +1,11 @@
 <app-header></app-header>
 <main>
     <app-login 
-        (nicknameCreate)="setNickname($event)"
         *ngIf="currentRoute === '/'"
     ></app-login>
     <app-chat
         [history]="messageHistory"
         (messageToSend)="messageSend($event)"
-        [nickname]="nickname"
         *ngIf="currentRoute === '/chat'"
     ></app-chat>
 </main>

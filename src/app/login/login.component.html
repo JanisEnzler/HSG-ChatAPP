@@ -2,19 +2,45 @@
     <h2>Login Campus Connect</h2>
     <div class="input-container">
         <input 
-        [(ngModel)]="chatNickname"
+        [(ngModel)]="username"
         type="text"
+        name="username"
         class="form-control"
         placeholder="Benutzername"
         maxlength="20"
+        autocomplete="username"
         >
-        <img src="assets/icons/person_icon.svg">
+        <img src="assets/icons/person_icon.svg" alt="username">
+    </div>
+    <div class="input-container">
+        <input 
+        [(ngModel)]="password"
+        [type]="passwordVisible ? 'text' : 'password'"
+        name="password"
+        class="form-control"
+        placeholder="Passwort"
+        maxlength="32"
+        autocomplete="current-password"
+        >
+        <img src="assets/icons/key_icon.svg" 
+        alt="password"
+        class="password-icon"
+        (click)="togglePasswordVisibility()">
     </div>
     <button
-    class="btn btn-primary"
-    [disabled]="!chatNickname.trim()"
-    (click)="createNickname(chatNickname)"
+    class="login-button"
+    [disabled]="!password.trim() || !username.trim()"
+    (click)="login(username, password)"
     >Login
     </button>
+    <button
+    class="signup-button"
+    [disabled]="!password.trim() || !username.trim()"
+    (click)="signup(username, password)"
+    >Signup
+    </button>
+</div>
+<div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
 </div>
 
