@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "176319ad-e0bd-4a33-bdb4-e951f04132e6",
+		"_postman_id": "b1a3a67f-fa02-418e-81e2-9134e4640df5",
 		"name": "Chat-API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39990263"
@@ -116,6 +116,291 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.status == \"Created\"){\r",
+							"    const response = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"authToken\", response.token);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"Janis\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/signup",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.status == \"OK\"){\r",
+							"    const response = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"authToken\", response.token);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"Janis\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validate Token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/validate",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"validate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Write Message",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_token_here>",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"message\": \"I am fine\"\r\n}"
+				},
+				"url": {
+					"raw": "{{url}}/chats/4179a533-d95b-4fe2-bd8b-330c3fd0389b",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"chats",
+						"4179a533-d95b-4fe2-bd8b-330c3fd0389b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Chat Group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_token_here>",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"userIds\":\r\n    [\r\n    \"79bbf725-c304-4df8-ac5a-675ae42d6eff\"\r\n    ],\r\n\"groupName\": \"Chat Projekt\"\r\n}"
+				},
+				"url": {
+					"raw": "{{url}}/chats",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"chats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Chats",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_token_here>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/chats",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"chats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Chat by ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_token_here>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/chats/68e96d6f-d8fe-4798-9f9e-de419a782584",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"chats",
+						"68e96d6f-d8fe-4798-9f9e-de419a782584"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -145,6 +430,11 @@
 			"key": "url",
 			"value": "https://api-hsg-chat-app.janisenzler.ch",
 			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

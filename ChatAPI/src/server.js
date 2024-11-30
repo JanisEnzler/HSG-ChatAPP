@@ -113,7 +113,7 @@ app.post('/signup', async (req, res) => {
 });
 
 // Takes username and password and returns a token
-app.get('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   const userName = req.body?.username?.toString();
   const userPassword = req.body?.password?.toString();
 
@@ -479,7 +479,7 @@ app.listen(app.get('port'), function () {
 
 function generateToken(userID) {
   const payload = { id: userID };
-  const options = { expiresIn: 300 };
+  const options = { expiresIn: (7*24*60) };
   token = jwt.sign(payload, adminSecret, options);
   return token;
 }
