@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const { validate: isUuid } = require('uuid');
+const cors = require('cors');
 
 
 const dbPassword = process.env.DB_PASSWORD || 'password';
@@ -31,6 +32,12 @@ app.set('port', port);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const chatHistory = [];
 const nicknames = [];
@@ -151,141 +158,18 @@ app.get('/validate', async (req, res) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!verifyToken(token)) {
-    res.status(401).send('Invalid or expired token.');
+    res.status(401).json({
+      status: 'error',
+      message: 'Invalid or expired token'
+    });
     return;
   }
-  user_id = jwt.decode(token).id;
-  res.status(200).send(`Valid token for user: ${user_id}`);
-});
-
-// history
-app.get('/history', async (req, res) => {
-  // retrieve all messages from the database
-  try {
-    const result = await pool.query('SELECT * FROM chatHistory');
-    res.status(200).json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
-
-});
-
-app.post('/history', async (req, res) => {
-  const chatMessage = req.body?.message?.toString();
-  const nickname_id = req.body?.nickname_id?.toString();
-
-  if (!chatMessage) {
-    res.status(400).send('Message is missing.');
-    return;
-  }
-
-  if (!nickname_id) {
-    res.status(400).send('Nickname is missing.');
-    return;
-  }
-
-  try {
-    // Check if the nickname exists in the DB
-    const result = await pool.query('SELECT * FROM nicknames WHERE id = $1', [nickname_id]);
-    if (result.rows.length === 0) {
-      res.status(400).send('Nickname not found.');
-      return;
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
-
-  // Get the current, local time
-  const date = new Date()
-
-  // Add the message to the chat history in the database
-  try {
-    const result = await pool.query('INSERT INTO chatHistory (message, nickname_id, timestamp) VALUES ($1, $2, $3) RETURNING *', [chatMessage, nickname_id, date]);
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
-});
-
-app.get('/nicknames', async (req, res) => {
-  // retrieve all nicknames from the database
-  try {
-    const result = await pool.query('SELECT * FROM nicknames');
-    res.status(200).json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
-});
-
-app.get('/nicknames/:id', async (req, res) => {
-  const id = +req.params.id;
-  // make sure to handle all errors
-  try {
-    const result = await pool.query('SELECT * FROM nicknames WHERE id = $1', [id]);
-    if (result.rows.length === 0) {
-      res.status(404).send('Nickname not found.');
-      return;
-    }
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
-});
-
-app.post('/nicknames', async (req, res) => {
-  const userName = req.body?.nickname?.toString();
-
-  if (!userName) {
-    res.status(400).send('Nickname is missing.');
-    return;
-  }
-
-  /* Nickname should only contain letters, numbers, spaces, underscores and hyphens */
-  if (!/^[a-zA-Z0-9_ -]+$/.test(userName)) {
-    res.status(400).send('Nickname contains invalid characters.');
-    return;
-  }
-
-  // Nickname should be between 3 and 20 characters long
-  if (userName.length < 3 || userName.length > 20) {
-    res.status(400).send('Nickname should be between 3 and 20 characters long.');
-    return;
-  }
-
-  try {
-    /* Check if the nickname is already in the DB */
-    var result = await pool.query('SELECT * FROM nicknames WHERE nickname = $1', [userName]);
-    if (result.rows.length > 0) {
-      res.status(400).send('Nickname already exists.');
-      return;
-    }
-    result = await pool.query('INSERT INTO nicknames (nickname) VALUES ($1) RETURNING *', [userName]);
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
-});
-
-app.delete('/nicknames/:id', async (req, res) => {
-  const id = +req.params.id;
-
-  try {
-    const result = await pool.query('DELETE FROM nicknames WHERE id = $1 RETURNING *', [id]);
-    if (result.rows.length === 0) {
-      res.status(404).send('Nickname not found.');
-      return;
-    }
-    res.status(200).json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error(err.message);
-  }
+  userId = jwt.decode(token).id;
+  res.status(200).json({
+    status: 'success',
+    message: `Valid token for user: ${userId}`,
+    userId: userId
+  });
 });
 
 // Send a message to a specific group
@@ -296,12 +180,14 @@ app.post('/chats/:id', async (req, res) => {
 
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const userId = jwt.decode(token).id;
+  
 
   if (!verifyToken(token)) {
     res.status(401).send('Access Denied.');
     return;
   }
+
+  const userId = jwt.decode(token).id;
 
   // Check if the id is in the correct format
   if (!isUuid(id)) {
@@ -344,11 +230,13 @@ app.post('/chats', async (req, res) => {
 
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const userId = jwt.decode(token).id;
+  
   if (!verifyToken(token)) {
     res.status(401).send('Access Denied.');
     return;
   }
+
+  const userId = jwt.decode(token).id;
 
   if (!groupName) {
     res.status(400).send('Group name is missing.');
@@ -402,11 +290,13 @@ app.post('/chats', async (req, res) => {
 app.get('/chats', async (req, res) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const userId = jwt.decode(token).id;
+  
   if (!verifyToken(token)) {
     res.status(401).send('Access Denied.');
     return;
   }
+
+  const userId = jwt.decode(token).id;
 
   try {
     const result = await pool.query(
@@ -425,11 +315,12 @@ app.get('/chats/:id', async (req, res) => {
   const id = req.params.id;
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const userId = jwt.decode(token).id;
   if (!verifyToken(token)) {
     res.status(401).send('Access Denied.');
     return;
   }
+
+  const userId = jwt.decode(token).id;
 
   // Check if the id is in the correct format
   if (!isUuid(id)) {
@@ -451,8 +342,22 @@ app.get('/chats/:id', async (req, res) => {
 
     const messagesResult = await pool.query(
       // Join the messages table with the users table, where the group_id is the one provided
-      'SELECT messages.message_id, messages.message, messages.timestamp, users.username FROM messages JOIN users ON messages.user_id = users.user_id WHERE group_id = $1', [id]
+      'SELECT messages.message_id, messages.message, messages.timestamp, users.username, users.user_id FROM messages JOIN users ON messages.user_id = users.user_id WHERE group_id = $1', [id]
     );
+
+    // Sort the messages by timestamp, with the oldest message first
+    messagesResult.rows.sort((a, b) => a.timestamp - b.timestamp);
+
+    // if the user ID of the message is the same as the user ID of the token, set the isMine property to true
+    messagesResult.rows.forEach((message) => {
+      message.isMine = message.user_id === userId;
+    });
+
+    // If a message has the same user ID as the previous message, set the showUsername property to false
+    for (let i = 1; i < messagesResult.rows.length; i++) {
+      messagesResult.rows[i].hideUsername = (messagesResult.rows[i].user_id === messagesResult.rows[i - 1].user_id)
+    }
+
     res.status(200).json(messagesResult.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
