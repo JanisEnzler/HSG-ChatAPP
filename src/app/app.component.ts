@@ -2,11 +2,8 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { CommonModule } from '@angular/common';
-import { ChatComponent} from './chat/chat.component';
-import { LoginComponent } from './login/login.component';
 import { Router, NavigationEnd } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi, withFetch } from '@angular/common/http';
-
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -14,9 +11,8 @@ import { provideHttpClient, withInterceptorsFromDi, withFetch } from '@angular/c
   imports: [
     CommonModule,
     HeaderComponent, 
-    FooterComponent, 
-    ChatComponent, 
-    LoginComponent
+    FooterComponent,
+    RouterModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

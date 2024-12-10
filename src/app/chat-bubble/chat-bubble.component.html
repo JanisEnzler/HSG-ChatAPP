@@ -1,4 +1,9 @@
-<div class="bubble">
-    <p class="message">{{ message[1] }}</p>
-    <p class="timestamp">{{ message[0] }}</p>
+
+<div class="message-container" 
+[ngClass]="{'my-message': isMe, 'other-message': !isMe, 'hideUsername': hideUsername}">
+    <div class="bubble">
+        <p class="nickname">{{ username }}</p>
+        <p class="message">{{ message }}</p>
+        <p class="timestamp">{{ timestamp | date : "dd.MM.yyyy HH:mm"  }}</p>
+    </div>
 </div>

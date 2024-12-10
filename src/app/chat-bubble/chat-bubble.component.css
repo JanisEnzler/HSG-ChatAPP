@@ -1,8 +1,22 @@
-.bubble{
+.message-container {
+    display: flex;
+    width: 100%;
+}
+
+.my-message {
+    justify-content: flex-end;
+}
+
+.other-message {
+    justify-content: flex-start;
+}
+
+.bubble {
     border: 2px solid #000;
     border-radius: 5px;
     width: auto;
     max-width: 60%;
+    min-width: 20%;
     margin: 5px;
     padding: 10px;
     display: inline-block;
@@ -10,17 +24,51 @@
     white-space: normal;
 }
 
-.message{
+
+.message {
     font-size: 14px;
     font-family: Gill Sans MT;
     padding: 0;
+    margin-bottom: 10px;
     text-align: left;
 }
 
-.timestamp{
+.timestamp {
     font-size: 8px;
     font-family: Gill Sans MT;
     text-align: right;
     padding: 0;
     margin: 0;
+}
+
+.nickname {
+    font-size: 10px;
+    font-family: Gill Sans MT;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+}
+
+.my-message .bubble {
+    background-color: var(--myChatBubbleColor);
+}
+
+.other-message .bubble {
+    background-color: #fff;
+}
+
+.my-message .nickname {
+    display: none;
+}
+
+.other-message .nickname {
+    display: block;
+}
+
+.hideUsername .nickname{
+    display: none;
+}
+
+.hideUsername .bubble {
+    margin-top: 0;
 }

@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
 import { CommonModule, NgIf } from '@angular/common';
+import { Router } from '@angular/router';
 
 
 @Component({
   selector: 'app-login',
+  host: { 'class': 'login-container' },
   standalone: true,
   imports: [FormsModule, CommonModule, NgIf],
   templateUrl: './login.component.html',
@@ -17,7 +19,7 @@ export class LoginComponent {
   errorMessage: string | null = null;
   passwordVisible: boolean = false;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private router: Router) {}
 
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
@@ -81,6 +83,7 @@ export class LoginComponent {
         console.log('Login successful', response);
         localStorage.setItem('token', response.token);
         // Redirect the user to the chat page
+        this.router.navigate(['/chat']);
       },
       error: error => {
         console.error('Login failed', error);
@@ -109,6 +112,8 @@ export class LoginComponent {
       next: response => {
         console.log('Signup successful', response);
         localStorage.setItem('token', response.token);
+        // Redirect the user to the chat page
+        this.router.navigate(['/chat']);
       },
       error: error => {
         console.error('Signup failed', error);

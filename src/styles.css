@@ -1,4 +1,5 @@
 :root {
     --hsgGreen: #00802f;
+    --myChatBubbleColor: #00802f66;
     --footerColor: var(--hsgGreen);
 }

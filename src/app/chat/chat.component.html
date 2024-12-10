@@ -1,5 +1,13 @@
-<app-chat-history [history]="history" />
-<app-chat-bar
-    (messageToSend)="messageSend($event)"
-    [nickname]="nickname"
-/>
+<div class="chat-selection">
+    <h3>Chats</h3>
+    <div class="group-editor" (click)="goToGroupEditor()">Gruppe erstellen</div>
+    @for (group of groups; track groups ) {
+        <div class="group" (click)="selectGroup(group)">
+            <p>{{ group.group_name }}</p>
+        </div>
+    }
+</div>
+<div class="chat-window">
+    <app-chat-history [chatID]="selectedGroup"/>
+    <app-chat-bar [chatID]="selectedGroup"/>
+</div>

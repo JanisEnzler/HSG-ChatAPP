@@ -1,6 +1,7 @@
 import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-chat-bar',
@@ -10,9 +11,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './chat-bar.component.css',
 })
 export class ChatBarComponent {
-  @Input () nickname!: string;
+  
+  private apiService = inject(ApiService );
 
-  @Output() messageToSend = new EventEmitter<string>();
+  @Input () chatID?: string;
 
   chatMessage = '';
   errorMessage!: string;
@@ -27,13 +29,17 @@ export class ChatBarComponent {
       return;
     }
 
-    if (!this.nickname) {
-      this.errorMessage = 'Please add a nickname!';
-
+    if (!this.chatID) {
+      this.errorMessage = 'Please select a chat!';
       return;
     }
-    const messageToSend = `${this.nickname} : ${message}`;
-    this.messageToSend.emit(messageToSend);
-    this.chatMessage = '';
+    this.apiService.sendMessageToGroup(this.chatID, message).subscribe(
+      (response) => {
+        this.chatMessage = '';
+      },
+      (error) => {
+        this.errorMessage = 'An error occurred while sending the message';
+      }
+    );
   }
 }

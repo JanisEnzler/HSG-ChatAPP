@@ -5,9 +5,8 @@
 }
 
 .chat-history {    
-    flex-grow: 1;
     overflow: auto;
-    text-align: right;
+    display: flex;
+    flex-direction: column;
     border-color: #000;
 }
-

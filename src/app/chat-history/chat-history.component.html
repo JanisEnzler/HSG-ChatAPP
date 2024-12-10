@@ -1,5 +1,11 @@
-<div class="chat-history">
-    <div *ngFor="let message of history">
-        <app-chat-bubble [message]="message"></app-chat-bubble>
-    </div>
+<div class="chat-history" #scrollFrame>
+    @for (chatMessage of chatMessages; track chatMessage ) {
+        <app-chat-bubble 
+            [message]="chatMessage.message"
+            [timestamp]="chatMessage.timestamp"
+            [username]="chatMessage.username"
+            [isMe]="chatMessage.isMine"
+            [hideUsername]="chatMessage.hideUsername">
+        </app-chat-bubble>
+    }
 </div>

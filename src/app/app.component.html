@@ -1,12 +1,5 @@
 <app-header></app-header>
 <main>
-    <app-login 
-        *ngIf="currentRoute === '/'"
-    ></app-login>
-    <app-chat
-        [history]="messageHistory"
-        (messageToSend)="messageSend($event)"
-        *ngIf="currentRoute === '/chat'"
-    ></app-chat>
+    <router-outlet></router-outlet>
 </main>
 <app-footer></app-footer>

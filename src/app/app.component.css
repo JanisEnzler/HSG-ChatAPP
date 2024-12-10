@@ -18,20 +18,25 @@ main {
   flex-direction: column;
 }
 
-app-chat {
+/* Target components through router-outlet */
+:host ::ng-deep router-outlet + * {
   height: 100%;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: end
 }
 
-app-login {
-  height: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* Specific component styles */
+:host ::ng-deep .login-container {
   justify-content: center;
   align-items: center;
 }
+
+:host ::ng-deep .chat-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+
 

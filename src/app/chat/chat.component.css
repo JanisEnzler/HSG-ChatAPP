@@ -1,3 +1,4 @@
+
 app-chat-bar {
     padding-top: 20px;
     display: flex;
@@ -7,9 +8,30 @@ app-chat-bar {
 }
 
 app-chat-history {
-    height: (100% - 80px);
+    height: calc(100% - 80px);
     flex-grow: 1;
     max-width: 100%;
     border-color: black;
     overflow: auto;
+}
+
+.chat-window {
+    height: 100%;
+    width: 70%;
+    padding-left: 20px;
+}
+
+.chat-selection {
+    height: 100%;
+    width: 30%;
+    padding-right: 20px;
+    border-right: 2px solid black;
+}
+
+.group {
+    cursor: pointer;
+}
+
+.group-editor {
+    cursor: pointer;
 }
