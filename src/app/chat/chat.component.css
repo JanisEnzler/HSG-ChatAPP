@@ -30,8 +30,43 @@ app-chat-history {
 
 .group {
     cursor: pointer;
+    padding: 10px;
+    border: 2px solid black;
+    margin: 10px;
+    border-radius: 10px;
+    font-size: 14;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.group p {
+    margin: 0;
 }
 
 .group-editor {
+    width: 100%;
     cursor: pointer;
+    background-color: var(--hsgGreen);
+    border: none;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    font-size: 18;
+}
+
+h3 {
+    text-align: center;
+}
+
+.current-group {
+    background-color: var(--selectedGroupColor);
+}
+
+.groups-window {
+    height: calc(100% - 110px);
+    width: 100%;
+    padding: 10px;
+    overflow-y: scroll;
 }

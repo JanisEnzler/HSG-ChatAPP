@@ -1,5 +1,11 @@
 :root {
     --hsgGreen: #00802f;
     --myChatBubbleColor: #00802f66;
+    --selectedGroupColor: #00802f66;
     --footerColor: var(--hsgGreen);
+    --red: #d00000;
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
 }

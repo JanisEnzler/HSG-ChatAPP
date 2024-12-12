@@ -1,13 +1,15 @@
 <div class="chat-selection">
     <h3>Chats</h3>
-    <div class="group-editor" (click)="goToGroupEditor()">Gruppe erstellen</div>
-    @for (group of groups; track groups ) {
-        <div class="group" (click)="selectGroup(group)">
+    <button class="group-editor" (click)="goToGroupEditor()">Gruppe erstellen</button>
+    <div class="groups-window">
+        @for (group of groups; track group.group_id) {
+        <div class="group" (click)="selectGroup(group)" [ngClass]="{'current-group': group.group_id == selectedGroup}">
             <p>{{ group.group_name }}</p>
         </div>
-    }
+        }
+    </div>
 </div>
 <div class="chat-window">
-    <app-chat-history [chatID]="selectedGroup"/>
-    <app-chat-bar [chatID]="selectedGroup"/>
+    <app-chat-history [chatID]="selectedGroup" />
+    <app-chat-bar [chatID]="selectedGroup" />
 </div>

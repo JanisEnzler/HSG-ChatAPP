@@ -24,6 +24,7 @@ export class ChatHistoryComponent {
   // of the chat with the chatID
   @ViewChild('scrollFrame') private scrollFrame!: ElementRef<HTMLElement>;
 
+  private intervalId?: any;
   private destroyRef = inject(DestroyRef);
   private apiService = inject(ApiService );
   private pollInterval = 2000;
@@ -31,7 +32,7 @@ export class ChatHistoryComponent {
   ngOnInit(): void {
     this.getHistory();
 
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.getHistory();
     }, this.pollInterval);
   }
@@ -43,8 +44,8 @@ export class ChatHistoryComponent {
     this.apiService.getGroupMessages(this.chatID)
       .pipe(
         tap((response: ChatMessage[]) => {
-          // Check if the response contains any new messages
-          if (response.length === this.chatMessages.length) {
+          // Check if the response is the same as the current chatMessages
+          if (JSON.stringify(response) === JSON.stringify(this.chatMessages)) {
             return;
           }
           this.chatMessages = response;
@@ -74,6 +75,13 @@ export class ChatHistoryComponent {
   ngOnChanges(): void {
     if (this.chatID) {
       this.getHistory();
+    }
+  }
+
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
     }
   }
 }

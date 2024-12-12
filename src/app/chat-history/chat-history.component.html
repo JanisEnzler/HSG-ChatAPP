@@ -1,5 +1,5 @@
 <div class="chat-history" #scrollFrame>
-    @for (chatMessage of chatMessages; track chatMessage ) {
+    @for (chatMessage of chatMessages; track chatMessage.message_id ) {
         <app-chat-bubble 
             [message]="chatMessage.message"
             [timestamp]="chatMessage.timestamp"

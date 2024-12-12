@@ -1,1 +1,32 @@
-<p>group-editor works!</p>
+<div class="editor">
+    <h3>Gruppe Erstellen</h3>
+    <form [formGroup]="groupForm" (ngSubmit)="onSubmit()">
+        <div class="group-name">
+            <label for="name">Gruppenname</label>
+            <input type="text" id="name" formControlName="name" placeholder="Gruppenname">
+        </div>
+        <div class="group-members">
+            <label for="memberSearch">Mitglieder</label>
+            <input type="text" id="memberSearch" formControlName="memberSearch" placeholder="Suche">
+            <ul class="user-suggestions" *ngIf="filteredUsers.length">
+                <li *ngFor="let user of filteredUsers" (click)="addMember(user)">
+                    {{ user.username }}
+                </li>
+            </ul>
+            <div class="selected-members" *ngIf="!filteredUsers.length">
+                <span *ngFor="let user of selectedMembers" class="selected-member">
+                    {{ user.username }}
+                    <button class="removeMemberButton" type="button" (click)="removeMember(user)">X</button>
+                </span>
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="submit" [disabled]="!groupName.trim() || selectedMembers.length==0">
+                Erstellen</button>
+            <button class="cancelButton" type="button" (click)="cancel()">Abbrechen</button>
+        </div>
+    </form>
+</div>
+<div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+</div>

@@ -1,22 +1,24 @@
 import { ChatBarComponent } from '../chat-bar/chat-bar.component';
 import { ChatHistoryComponent } from '../chat-history/chat-history.component';
 import { ApiService } from '../api.service';
-import { Component, Input, ViewChild, DestroyRef, ElementRef, inject } from '@angular/core';
+import { Component, Input, ViewChild, DestroyRef, ElementRef, inject} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap, finalize, catchError, EMPTY } from 'rxjs';
 import { Group } from '../shared/models/group';
 import { Router } from '@angular/router';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-chat',
   host: { 'class': 'chat-container' },
   standalone: true,
-  imports: [ChatBarComponent, ChatHistoryComponent],
+  imports: [ChatBarComponent, ChatHistoryComponent, NgClass],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
 export class ChatComponent {
 
+  private intervalId?: any;
   private destroyRef = inject(DestroyRef);
   private apiService = inject(ApiService );
   private router = inject(Router);
@@ -29,7 +31,7 @@ export class ChatComponent {
   ngOnInit(): void {
     this.getGroups();
 
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.getGroups();
     }, this.pollInterval);
   }
@@ -67,5 +69,11 @@ export class ChatComponent {
 
   goToGroupEditor(): void {
     this.router.navigate(['/group-editor']);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 }

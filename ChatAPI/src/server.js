@@ -17,6 +17,7 @@ const dbPort = process.env.DB_PORT || 5432;
 const dbName = process.env.DB || 'postgres';
 const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
 const adminSecret = process.env.ADMIN_SECRET || 'defaultSecret';
+const origin = process.env.ORIGIN || 'http://localhost:4200';
 
 const { Pool } = require('pg');
 
@@ -34,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: origin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -164,12 +165,13 @@ app.get('/validate', async (req, res) => {
     });
     return;
   }
-  userId = jwt.decode(token).id;
-  res.status(200).json({
-    status: 'success',
-    message: `Valid token for user: ${userId}`,
-    userId: userId
-  });
+  
+  const result = await pool.query('SELECT user_id, username FROM users WHERE user_id = $1', [jwt.decode(token).id]);
+  if (result.rows.length === 0) {
+    res.status(404).send('User not found.');
+    return;
+  }
+  res.status(200).json(result.rows[0]);
 });
 
 // Send a message to a specific group
@@ -240,6 +242,11 @@ app.post('/chats', async (req, res) => {
 
   if (!groupName) {
     res.status(400).send('Group name is missing.');
+    return;
+  }
+
+  if (!/^[a-zA-Z0-9_ -]+$/.test(groupName)) {
+    res.status(400).send('Groupname contains invalid characters.');
     return;
   }
 

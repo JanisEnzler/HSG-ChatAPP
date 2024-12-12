@@ -8,7 +8,7 @@ const routeConfig: Routes = [
     {
         path: '',
         redirectTo: 'login',
-        pathMatch: 'full'
+        pathMatch: 'full',
     },
     {
         path: 'login',
@@ -26,7 +26,8 @@ const routeConfig: Routes = [
     },
     {
         path: '**',
-        redirectTo: 'login'
+        redirectTo: 'login',
+        pathMatch: 'full'
     }
 ]
 

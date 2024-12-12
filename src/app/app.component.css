@@ -38,5 +38,10 @@ main {
   width: 100%;
 }
 
+:host ::ng-deep .group-container {
+  justify-content: center;
+  align-items: center;
+}
+
 
 
