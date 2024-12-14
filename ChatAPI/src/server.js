@@ -250,6 +250,11 @@ app.post('/chats', async (req, res) => {
     return;
   }
 
+  if (groupName.length < 3 || groupName.length > 20) {
+    res.status(400).send('Groupname should be between 3 and 20 characters long.');
+    return;
+  }
+
   if (!userIds || userIds.length < 1) {
     res.status(400).send('Invalid UserIds.');
     return;

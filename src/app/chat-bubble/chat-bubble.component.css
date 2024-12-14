@@ -28,7 +28,6 @@
 
 .message {
     font-size: 14px;
-    font-family: 'Gill Sans MT';
     padding: 0;
     margin-bottom: 10px;
     text-align: left;
@@ -36,7 +35,6 @@
 
 .timestamp {
     font-size: 8px;
-    font-family: 'Gill Sans MT';
     text-align: right;
     padding: 0;
     margin: 0;
@@ -44,7 +42,6 @@
 
 .nickname {
     font-size: 10px;
-    font-family: 'Gill Sans MT';
     text-align: left;
     padding: 0;
     margin: 0;
