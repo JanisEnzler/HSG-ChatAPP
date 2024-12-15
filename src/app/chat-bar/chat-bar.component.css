@@ -46,3 +46,14 @@ textarea:focus{
     border: 3px solid var(--hsgGreen);
     box-shadow: 0 0 10px var(--hsgGreen);
 }
+
+.error-message {
+    color: red;
+    margin-right: 20px;
+    font-size: 12px;
+    border: solid 2px red;
+    background-color: #ff000040;
+    width: 300px;
+    padding: 10px;
+    border-radius: 10px;
+}

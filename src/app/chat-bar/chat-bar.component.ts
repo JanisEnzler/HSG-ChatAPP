@@ -6,7 +6,7 @@ import { ApiService } from '../api.service';
 @Component({
   selector: 'app-chat-bar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, NgIf],
   templateUrl: './chat-bar.component.html',
   styleUrl: './chat-bar.component.css',
 })
@@ -17,28 +17,40 @@ export class ChatBarComponent {
   @Input () chatID?: string;
 
   chatMessage = '';
-  errorMessage!: string;
+  errorMessage: string | null = null;
+
+  showError(message: string) {
+    this.errorMessage = message;
+    setTimeout(() => {
+      this.errorMessage = null;
+    }, 10000); // 10 seconds
+  }
 
   addMessage(message: string): void {
     message = message.replace(/(\r\n|\r|\n)/, '');
     message = message.trim();
 
     if (!message) {
-      this.errorMessage = 'Please add a message!';
-
+      this.showError('Please add a message!');
       return;
     }
 
     if (!this.chatID) {
-      this.errorMessage = 'Please select a chat!';
+      this.showError('Please select a chat!');
       return;
     }
+
+    if (message.length > 2000) {
+      this.showError('Message has to be less than 2000 characters');
+      return;
+    }
+
     this.apiService.sendMessageToGroup(this.chatID, message).subscribe(
       (response) => {
         this.chatMessage = '';
       },
       (error) => {
-        this.errorMessage = 'An error occurred while sending the message';
+        this.showError(error.error || 'An error occurred while sending the message');
       }
     );
   }

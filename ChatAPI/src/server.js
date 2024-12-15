@@ -197,6 +197,13 @@ app.post('/chats/:id', async (req, res) => {
     return;
   }
 
+
+  // Check if the message is between 1 and 2000 characters long
+  if (chatMessage.length < 1 || chatMessage.length > 2000 || !chatMessage) {
+    res.status(400).send('Message should be between 1 and 2000 characters long.');
+    return;
+  }
+
   // Check if the user is part of the group
   try {
     const result = await pool.query(
