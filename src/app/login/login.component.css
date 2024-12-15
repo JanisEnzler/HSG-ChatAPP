@@ -9,11 +9,10 @@
     padding: 20px;
 }
 
-h2{
-    font-style: bold;
-    font-size: 22px;
-    text-align: center;
-    margin-bottom:  80px;
+.campus-connect-logo {
+    height: 100px;
+    margin: auto;
+    width: auto;
 }
 
 .signup-button{

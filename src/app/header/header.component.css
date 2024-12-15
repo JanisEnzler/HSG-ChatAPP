@@ -1,5 +1,6 @@
-header img {
+.hsg-logo {
     height: 50px;
+    margin-top: 15px;
     width: auto;
 }
 
@@ -14,4 +15,13 @@ header {
 
 div{
     padding-left: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.campus-connect-logo {
+    height: 80px;
+    width: auto;
+    margin-right: 10px;
 }
