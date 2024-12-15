@@ -10,9 +10,10 @@
 }
 
 .campus-connect-logo {
-    height: 100px;
+    height: 120px;
     margin: auto;
     width: auto;
+    margin-bottom: 20px;
 }
 
 .signup-button{
@@ -36,7 +37,6 @@
 }
 
 .login-button{
-    margin-top: 20px;
     height: 40px;
     width: 100%;
     background-color: var(--hsgGreen);
@@ -73,7 +73,7 @@ input:focus{
 .input-container{
     display: flex;
     flex-direction: row;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     border-bottom: 2px solid #000;
     justify-content: center;
     padding-left: 10px;
